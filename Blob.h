@@ -23,6 +23,12 @@ class Blob
   // 頂点の数
   const GLsizei count;
 
+  // 描画用のシェーダ
+  const GLuint drawShader;
+
+  // unform 変数の場所
+  const GLint mpLoc, mvLoc;
+
 public:
 
   // コンストラクタ
@@ -41,5 +47,5 @@ public:
   void initialize(const Particles &particles) const;
 
   // 描画
-  void draw() const;
+  void draw(const GgMatrix &mp, const GgMatrix &mv) const;
 };

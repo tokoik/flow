@@ -6,6 +6,9 @@
 // コンストラクタ
 Blob::Blob(const Particles &particles)
   : count(static_cast<GLsizei>(particles.size()))
+  , drawShader(ggLoadShader("point.vert", "point.frag"))
+  , mpLoc(glGetUniformLocation(drawShader, "mp"))
+  , mvLoc(glGetUniformLocation(drawShader, "mv"))
 {
   // 頂点配列オブジェクトを作成する
   glGenVertexArrays(1, &vao);
@@ -56,10 +59,17 @@ void Blob::initialize(const Particles &particles) const
 }
 
 // 描画
-void Blob::draw() const
+void Blob::draw(const GgMatrix &mp, const GgMatrix &mv) const
 {
   // 描画する頂点配列オブジェクトを指定する
   glBindVertexArray(vao);
+
+  // 点のシェーダプログラムの使用開始
+  glUseProgram(drawShader);
+
+  // uniform 変数を設定する
+  glUniformMatrix4fv(mpLoc, 1, GL_FALSE, mp.get());
+  glUniformMatrix4fv(mvLoc, 1, GL_FALSE, mv.get());
 
   // 点で描画する
   glDrawArrays(GL_POINTS, 0, count);

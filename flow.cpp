@@ -112,6 +112,9 @@ void GgApplication::run()
   // 描画の設定
   //
 
+  // ビュー変換行列を求める
+  const GgMatrix view(ggLookat(0.0f, 0.0f, 5.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f));
+
   // 背面カリングを有効にする
   glEnable(GL_CULL_FACE);
 
@@ -131,6 +134,18 @@ void GgApplication::run()
   {
     // ウィンドウを消去する
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    // 透視投影変換行列を求める
+    const GgMatrix projection(ggPerspective(1.0f, window.getAspect(), 1.0f, 10.0f));
+
+    // モデル変換行列を求める
+    const GgMatrix model(window.getTrackball());
+
+    // モデルビュー変換行列を求める
+    const GgMatrix modelview(view * model);
+
+    // 粒子群オブジェクトを描画する
+    blob->draw(projection, modelview);
 
     // カラーバッファを入れ替える
     window.swapBuffers();
