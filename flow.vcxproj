@@ -119,11 +119,13 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Blob.cpp" />
     <ClCompile Include="flow.cpp" />
     <ClCompile Include="gg.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Blob.h" />
     <ClInclude Include="gg.h" />
     <ClInclude Include="GgApplication.h" />
     <ClInclude Include="Particle.h" />
