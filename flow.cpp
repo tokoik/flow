@@ -25,6 +25,9 @@ const GLfloat pMean(0.0f);
 // 一つの粒子群の中心からの距離の標準偏差
 const GLfloat pDeviation(0.3f);
 
+// アニメーションの繰り返し間隔
+const double interval(5.0);
+
 //
 // 粒子群の生成
 //
@@ -132,6 +135,13 @@ void GgApplication::run()
   //
   while (window)
   {
+    // 定期的に粒子群オブジェクトをリセットする
+    if (glfwGetTime() > interval)
+    {
+      blob->initialize(initial);
+      glfwSetTime(0.0);
+    }
+
     // ウィンドウを消去する
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
