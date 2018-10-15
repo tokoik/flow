@@ -14,11 +14,20 @@ layout(std430, binding = 0) buffer Particles
   Particle particle[];
 };
 
+// 重力加速度
+uniform vec4 gravity = vec4(0.0, -9.8, 0.0, 0.0);
+
+// タイムステップ
+uniform float dt = 0.01666667;
+
 void main()
 {
   // ワークグループ ID をのまま頂点データのインデックスに使う
   const uint i = gl_WorkGroupID.x;
 
   // 位置を更新する
-  particle[i].position.z += 0.1;
+  particle[i].position += particle[i].velocity * dt;
+
+  // 速度を更新する
+  particle[i].velocity += gravity * dt;
 }
