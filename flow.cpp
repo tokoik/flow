@@ -23,7 +23,7 @@ const int pCount(1000);
 const GLfloat pMean(0.0f);
 
 // 一つの粒子群の中心からの距離の標準偏差
-const GLfloat pDeviation(0.3f);
+const GLfloat pDeviation(1.0f);
 
 // アニメーションの繰り返し間隔
 const double interval(5.0);
@@ -68,7 +68,7 @@ void generateParticles(Particles &particles, int count,
     const GLfloat r(normal(rn));
 
     // 粒子を追加する
-    particles.emplace_back(r * sp * ct + cx, r * sp * st + cy, r * cp + cz);
+    particles.emplace_back(cx, cy, cz, r * sp * ct, r * sp * st, r * cp);
   }
 }
 
