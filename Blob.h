@@ -29,6 +29,9 @@ class Blob
   // unform 変数の場所
   const GLint mpLoc, mvLoc;
 
+  // 更新用のシェーダ
+  const GLuint updateShader;
+
 public:
 
   // コンストラクタ
@@ -48,4 +51,7 @@ public:
 
   // 描画
   void draw(const GgMatrix &mp, const GgMatrix &mv) const;
+
+  // 更新
+  void update() const;
 };

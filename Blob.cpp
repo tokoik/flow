@@ -9,6 +9,7 @@ Blob::Blob(const Particles &particles)
   , drawShader(ggLoadShader("point.vert", "point.frag"))
   , mpLoc(glGetUniformLocation(drawShader, "mp"))
   , mvLoc(glGetUniformLocation(drawShader, "mv"))
+  , updateShader(ggLoadComputeShader("update.comp"))
 {
   // 頂点配列オブジェクトを作成する
   glGenVertexArrays(1, &vao);
@@ -73,4 +74,17 @@ void Blob::draw(const GgMatrix &mp, const GgMatrix &mv) const
 
   // 点で描画する
   glDrawArrays(GL_POINTS, 0, count);
+}
+
+// 更新
+void Blob::update() const
+{
+  // シェーダストレージバッファオブジェクトを 0 番の結合ポイントに結合する
+  glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 0, vbo);
+
+  // 更新用のシェーダプログラムの使用開始
+  glUseProgram(updateShader);
+
+  // 計算を実行する
+  glDispatchCompute(count, 1, 1);
 }

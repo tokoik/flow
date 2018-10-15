@@ -147,6 +147,9 @@ void GgApplication::run()
     // 粒子群オブジェクトを描画する
     blob->draw(projection, modelview);
 
+    // 粒子群オブジェクトを更新する
+    blob->update();
+
     // カラーバッファを入れ替える
     window.swapBuffers();
   }
