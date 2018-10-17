@@ -17,6 +17,12 @@ layout(std430, binding = 0) buffer Particles
 // 重力加速度
 uniform vec4 gravity = vec4(0.0, -9.8, 0.0, 0.0);
 
+// 地面の高さ
+uniform float height = -1.5;
+
+// 減衰率
+uniform float attenuation = 0.7;
+
 // タイムステップ
 uniform float dt = 0.01666667;
 
@@ -25,9 +31,19 @@ void main()
   // ワークグループ ID をのまま頂点データのインデックスに使う
   const uint i = gl_WorkGroupID.x;
 
+  // 速度を更新する
+  particle[i].velocity += gravity * dt;
+
   // 位置を更新する
   particle[i].position += particle[i].velocity * dt;
 
-  // 速度を更新する
-  particle[i].velocity += gravity * dt;
+  // もし地面に落ちたら
+  if (particle[i].position.y < height)
+  {
+    // y 方向の速度を反転する
+    particle[i].velocity.y = -attenuation * particle[i].velocity.y;
+
+    // 高さを地面の高さに戻す
+    particle[i].position.y = height;
+  }
 }
