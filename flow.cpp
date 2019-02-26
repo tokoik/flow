@@ -9,6 +9,7 @@
 // 標準ライブラリ
 #include <memory>
 #include <random>
+#include <random>
 
 // 生成する粒子群の数
 const int bCount(8);

@@ -3,12 +3,24 @@
 //
 #include "Blob.h"
 
+// 補間格子のサイズ
+constexpr GLsizei GRID_X(64), GRID_Y(64), GRID_Z(64);
+
+// 計算空間のサイズ
+constexpr GLfloat RANGE[] = { 3.0f, 3.0f, 3.0f };
+
+// 計算空間の中心
+constexpr GLfloat CENTER[] = { 0.0f, 0.0f, 0.0f };
+
 // コンストラクタ
 Blob::Blob(const Particles &particles)
   : count(static_cast<GLsizei>(particles.size()))
   , drawShader(ggLoadShader("point.vert", "point.frag"))
   , mpLoc(glGetUniformLocation(drawShader, "mp"))
   , mvLoc(glGetUniformLocation(drawShader, "mv"))
+  , forceShader(ggLoadShader("force.vert", "force.frag", "force.geom"))
+  , mcLoc(glGetUniformLocation(drawShader, "mc"))
+  , gridLoc(glGetUniformLocation(drawShader, "grid"))
   , updateShader(ggLoadComputeShader("update.comp"))
 {
   // 頂点配列オブジェクトを作成する
@@ -30,6 +42,27 @@ Blob::Blob(const Particles &particles)
 
   // 頂点バッファオブジェクトにデータを格納する
   initialize(particles);
+
+  // フレームバッファオブジェクトとターゲットのテクスチャ
+  glGenTextures(1, &texture);
+  glGenFramebuffers(1, &target);
+
+  // 三次元テクスチャを作る
+  glBindTexture(GL_TEXTURE_3D, texture);
+  glTexStorage3D(GL_TEXTURE_3D, 4, GL_RGBA32F, GRID_X, GRID_Y, GRID_Z);
+  glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+  glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+  glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
+  glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
+  glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_BORDER);
+
+  // テクスチャの境界色
+  static constexpr GLfloat border[] = { 0.0f, 0.0f, 0.0f, 0.0f };
+  glTexParameterfv(GL_TEXTURE_2D_ARRAY, GL_TEXTURE_BORDER_COLOR, border);
+
+  // 物理量のレンダリング先のフレームバッファオブジェクト
+  glBindFramebuffer(GL_FRAMEBUFFER, target);
+  glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, texture, 0);
 }
 
 // デストラクタ
@@ -40,6 +73,12 @@ Blob::~Blob()
 
   // 頂点バッファオブジェクトを削除する
   glDeleteBuffers(1, &vbo);
+
+  // フレームバッファオブジェクトを削除する
+  glDeleteFramebuffers(1, &target);
+
+  // 三次元テクスチャを削除する
+  glDeleteTextures(1, &texture);
 }
 
 // 初期化
@@ -64,6 +103,15 @@ void Blob::draw(const GgMatrix &mp, const GgMatrix &mv) const
 {
   // 描画する頂点配列オブジェクトを指定する
   glBindVertexArray(vao);
+
+  // 物理量を描画するフレームバッファに切り替える
+  glBindFramebuffer(GL_FRAMEBUFFER, target);
+
+  // 点で描画する
+  glDrawArrays(GL_POINTS, 0, count);
+
+  // 通常のフレームバッファに戻す
+  glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
   // 点のシェーダプログラムの使用開始
   glUseProgram(drawShader);

@@ -29,6 +29,18 @@ class Blob
   // unform 変数の場所
   const GLint mpLoc, mvLoc;
 
+  // 影響力計算用のシェーダ
+  const GLuint forceShader;
+
+  // uniform 変数の場所
+  const GLint mcLoc, gridLoc;
+
+  // 格子の三次元テクスチャ
+  GLuint texture;
+
+  // 物理量のレンダリング先
+  GLuint target;
+
   // 更新用のシェーダ
   const GLuint updateShader;
 

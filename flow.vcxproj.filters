@@ -55,5 +55,15 @@
     <None Include="update.comp">
       <Filter>シェーダー ファイル</Filter>
     </None>
+    <None Include=".editorconfig" />
+    <None Include="force.vert">
+      <Filter>シェーダー ファイル</Filter>
+    </None>
+    <None Include="force.frag">
+      <Filter>シェーダー ファイル</Filter>
+    </None>
+    <None Include="force.geom">
+      <Filter>シェーダー ファイル</Filter>
+    </None>
   </ItemGroup>
 </Project>
