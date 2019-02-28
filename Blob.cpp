@@ -18,6 +18,7 @@ Blob::Blob(const Particles &particles)
   , drawShader(ggLoadShader("point.vert", "point.frag"))
   , mpLoc(glGetUniformLocation(drawShader, "mp"))
   , mvLoc(glGetUniformLocation(drawShader, "mv"))
+  , mtLoc(glGetUniformLocation(drawShader, "mt"))
   , forceShader(ggLoadShader("force.vert", "force.frag", "force.geom"))
   , mcLoc(glGetUniformLocation(drawShader, "mc"))
   , gridLoc(glGetUniformLocation(drawShader, "grid"))
@@ -99,13 +100,19 @@ void Blob::initialize(const Particles &particles) const
 }
 
 // 描画
-void Blob::draw(const GgMatrix &mp, const GgMatrix &mv) const
+void Blob::draw(const GgMatrix &mp, const GgMatrix &mv, const GgMatrix &mt) const
 {
   // 描画する頂点配列オブジェクトを指定する
   glBindVertexArray(vao);
 
   // 物理量を描画するフレームバッファに切り替える
   glBindFramebuffer(GL_FRAMEBUFFER, target);
+
+  // 力の計算用のシェーダプログラムの使用開始
+  glUseProgram(forceShader);
+
+  // uniform 変数を設定する
+  glUniformMatrix4fv(mcLoc, 1, GL_FALSE, mt.get());
 
   // 点で描画する
   glDrawArrays(GL_POINTS, 0, count);

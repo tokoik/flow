@@ -4,14 +4,10 @@
 layout (location = 0) in vec4 position;             // 現在の位置
 
 // 変換行列
-uniform mat4 mp;                                    // 投影変換行列
-uniform mat4 mv;                                    // モデルビュー変換行列
+uniform mat4 mc;                                    // 計算領域
 
 void main()
 {
-  // モデルビュー変換
-  vec4 p = mv * position;                           // 視点座標系の頂点の位置
-
-  // 投影変換
-  gl_Position = mp * p;
+  // 計算領域をクリッピング空間にはめ込む
+  gl_Position = mc * position;
 }

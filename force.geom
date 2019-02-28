@@ -1,9 +1,9 @@
-﻿#version 430 core
+#version 430 core
 
 #define INVOCATIONS 32
 
 layout(points, invocations = INVOCATIONS) in;
-layout(points, max_vertices = 1) out;
+layout(triangle_strip, max_vertices = 4) out;
 
 // 物理量のグリッド
 unform sampler3D force;
@@ -25,6 +25,11 @@ void main(void)
   // スライスの前端の位置
   float forceFront = gl_in[0].gl_Position.z - forceRadius;
 
+	// メタボールの中心とスライスとの距離のメタボールの半径に対する割合を求める
+	d = (zSlice - p.z) / radius;
+
+	// メタボールの断面の大きさ（メタボールが必ずスライスと交差するなら 1.0 - d * d は負にならない）
+	gl_PointSize = -size.y * 2.0 * radius * sqrt(1.0 - d * d) * mp[1][1] / zSlice;
 
   // レンダリングするレイヤ
   gl_Layer = gl_InvocationID + shift * INVOCATIONS;

@@ -119,6 +119,12 @@ void GgApplication::run()
   // ビュー変換行列を求める
   const GgMatrix view(ggLookat(0.0f, 0.0f, 5.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f));
 
+  // 計算領域を設定する
+  const GgMatrix region(ggOrthogonal(-3.0f, 3.0f, -3.0f, 3.0f, -3.0f, 3.0f));
+
+  // 点のサイズはシェーダから変更する
+  glEnable(GL_VERTEX_PROGRAM_POINT_SIZE);
+
   // 背面カリングを有効にする
   glEnable(GL_CULL_FACE);
 

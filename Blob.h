@@ -27,7 +27,7 @@ class Blob
   const GLuint drawShader;
 
   // unform 変数の場所
-  const GLint mpLoc, mvLoc;
+  const GLint mpLoc, mvLoc, mtLoc;
 
   // 影響力計算用のシェーダ
   const GLuint forceShader;
@@ -62,7 +62,7 @@ public:
   void initialize(const Particles &particles) const;
 
   // 描画
-  void draw(const GgMatrix &mp, const GgMatrix &mv) const;
+  void draw(const GgMatrix &mp, const GgMatrix &mv, const GgMatrix &mt) const;
 
   // 更新
   void update() const;
