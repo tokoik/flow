@@ -6,27 +6,30 @@ layout(points, invocations = INVOCATIONS) in;
 layout(triangle_strip, max_vertices = 4) out;
 
 // 物理量のグリッド
-unform sampler3D force;
+unform sampler3D grid;
 
 // 粒子の影響半径
-uniform float forceRadius;
+uniform vec3 radius;
 
 void main(void)
 {
   // 物理量のグリッドのサイズ
-  ivec3 forceSize = textureSize(force, 0);
+  const ivec3 size = textureSize(grid, 0);
 
   // スライスの数
-  int forceSlices = forceSize.z;
+  const int slices = size.z;
 
   // スライスの間隔
-  float forceInterval = 2.0 / float(forceSlices);
+  const interval = 2.0 / float(slices);
 
   // スライスの前端の位置
-  float forceFront = gl_in[0].gl_Position.z - forceRadius;
+  float front = gl_in[0].gl_Position.z - radius.z;
+
+  // スライスの後端の位置
+  float rear = gl_in[0].gl_Position.z + radius.z;
 
 	// メタボールの中心とスライスとの距離のメタボールの半径に対する割合を求める
-	d = (zSlice - p.z) / radius;
+	d = (slice - p.z) / radius.z;
 
 	// メタボールの断面の大きさ（メタボールが必ずスライスと交差するなら 1.0 - d * d は負にならない）
 	gl_PointSize = -size.y * 2.0 * radius * sqrt(1.0 - d * d) * mp[1][1] / zSlice;

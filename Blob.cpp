@@ -6,11 +6,11 @@
 // 補間格子のサイズ
 constexpr GLsizei GRID_X(64), GRID_Y(64), GRID_Z(64);
 
-// 計算空間のサイズ
-constexpr GLfloat RANGE[] = { 3.0f, 3.0f, 3.0f };
+// 計算空間
+constexpr GLfloat RANGE[] = { -3.0f, 3.0f, -3.0f, 3.0f, -3.0f, 3.0f };
 
-// 計算空間の中心
-constexpr GLfloat CENTER[] = { 0.0f, 0.0f, 0.0f };
+// 粒子のサイズ
+constexpr GgVector RADIUS = { 0.3f, 0.3f, 0.3f, 0.0f };
 
 // コンストラクタ
 Blob::Blob(const Particles &particles)
@@ -20,8 +20,9 @@ Blob::Blob(const Particles &particles)
   , mvLoc(glGetUniformLocation(drawShader, "mv"))
   , mtLoc(glGetUniformLocation(drawShader, "mt"))
   , forceShader(ggLoadShader("force.vert", "force.frag", "force.geom"))
-  , mcLoc(glGetUniformLocation(drawShader, "mc"))
+  , mtLoc(glGetUniformLocation(drawShader, "mt"))
   , gridLoc(glGetUniformLocation(drawShader, "grid"))
+  , radiusLoc(glGetUniformLocation(drawShader, "grid"))
   , updateShader(ggLoadComputeShader("update.comp"))
 {
   // 頂点配列オブジェクトを作成する
@@ -111,8 +112,17 @@ void Blob::draw(const GgMatrix &mp, const GgMatrix &mv, const GgMatrix &mt) cons
   // 力の計算用のシェーダプログラムの使用開始
   glUseProgram(forceShader);
 
+  // クリッピング空間中の粒子の大きさ
+  const GgVector radius(mt * RADIUS);
+
   // uniform 変数を設定する
-  glUniformMatrix4fv(mcLoc, 1, GL_FALSE, mt.get());
+  glUniformMatrix4fv(mtLoc, 1, GL_FALSE, mt.get());
+  glUniform1i(gridLoc, 0);
+  glUniform3fv(radiusLoc, 1, radius.data());
+
+  // 格子のテクスチャ
+  glActiveTexture(GL_TEXTURE0);
+  glBindTexture(GL_TEXTURE_3D, texture);
 
   // 点で描画する
   glDrawArrays(GL_POINTS, 0, count);

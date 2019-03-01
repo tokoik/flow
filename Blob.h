@@ -33,7 +33,7 @@ class Blob
   const GLuint forceShader;
 
   // uniform 変数の場所
-  const GLint mcLoc, gridLoc;
+  const GLint mtLoc, gridLoc, radiusLoc;
 
   // 格子の三次元テクスチャ
   GLuint texture;
