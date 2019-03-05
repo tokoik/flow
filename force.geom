@@ -8,16 +8,36 @@ layout(triangle_strip, max_vertices = 4) out;
 // 物理量のグリッド
 unform sampler3D grid;
 
+// 領域の前端 (x: zmin) と奥行き (y : zmax - zmin)
+uniform vec2 range;
+
 // 粒子の影響半径
 uniform vec3 radius;
 
 void main(void)
 {
   // 物理量のグリッドのサイズ
-  const ivec3 size = textureSize(grid, 0);
+  ivec3 size = textureSize(grid, 0);
 
-  // スライスの数
-  const int slices = size.z;
+  // スライスの数 - 1
+  int slices = size.z - 1;
+
+  // この粒子の基準のスライス
+  int origin = int((gl_in[0].gl_Position.z - range.x) * slices / range.y + 0.5);
+
+  // この invocation のスライス
+  gl_layer = origin + gl_InvocationID - INVOCATIONS / 2;
+
+  // 計算領域より手前なら戻る
+  if (gl_layer < 0) return;
+
+  // 計算領域より後ろなら戻る
+  if (gl_layer > slices) return;
+
+  // この invocation のスライスの位置
+  float depth = range.x + range.y * gl_Layer / slices;
+
+
 
   // スライスの間隔
   const interval = 2.0 / float(slices);
