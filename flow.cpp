@@ -10,6 +10,45 @@
 #include <memory>
 #include <random>
 
+//
+// 光源
+//
+
+// 光源の材質と位置
+constexpr GgSimpleShader::Light lightData =
+{
+  { 0.1f, 0.1f, 0.1f, 1.0f },
+  { 1.0f, 1.0f, 1.0f, 1.0f },
+  { 1.0f, 1.0f, 1.0f, 1.0f },
+  { 3.0f, 4.0f, 5.0f, 0.0f }
+};
+
+//
+// カメラ
+//
+
+// カメラの位置
+constexpr GLfloat cameraPosition[] = { 0.0f, 0.0f, 5.0f };
+
+// 目標点の位置
+constexpr GLfloat cameraTarget[] = { 0.0f, 0.0f, 0.0f };
+
+// カメラの上方向のベクトル
+constexpr GLfloat cameraUp[] = { 0.0f, 1.0f, 0.0f };
+
+// 画角
+constexpr GLfloat cameraFovy(1.0f);
+
+// 前方面と後方面の位置
+constexpr GLfloat cameraNear(3.0f), cameraFar(7.0f);
+
+// 背景色
+constexpr GLfloat background[] = { 1.0f, 1.0f, 0.9f };
+
+//
+// 粒子群
+//
+
 // 生成する粒子群の数
 const int bCount(8);
 
@@ -115,6 +154,9 @@ void GgApplication::run()
   // 描画の設定
   //
 
+  // 図形描画用の光源
+  const GgSimpleShader::LightBuffer light(lightData);
+
   // ビュー変換行列を求める
   const GgMatrix view(ggLookat(0.0f, 0.0f, 5.0f, 0.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f));
 
@@ -126,6 +168,29 @@ void GgApplication::run()
 
   // 背景色を指定する
   glClearColor(0.1f, 0.2f, 0.3f, 0.0f);
+
+  // 点のサイズはシェーダから変更する
+  glEnable(GL_VERTEX_PROGRAM_POINT_SIZE);
+
+  /*
+  ** レンダリング結果のブレンド
+  **
+  **   glBlendFunc(GL_ONE, GL_ZERO);                       // 上書き（デフォルト）
+  **   glBlendFunc(GL_ZERO, GL_ONE);                       // 描かない
+  **   glBlendFunc(GL_ONE, GL_ONE);                        // 加算
+  **   glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);  // 通常のアルファブレンデング
+  **   glBlendColor(0.01f, 0.01f, 0.01f, 0.0f);            // 加算する定数
+  **   glBlendFunc(GL_CONSTANT_COLOR, GL_ONE);             // 定数を加算
+  */
+
+  // フレームバッファに加算する
+  glBlendFunc(GL_ONE, GL_ONE);
+  glBlendEquation(GL_FUNC_ADD);
+
+#if !DEPTH
+  // デプスバッファは使わない
+  glDisable(GL_DEPTH_TEST);
+#endif
 
   // 時計をリセットする
   glfwSetTime(0.0);
@@ -155,7 +220,7 @@ void GgApplication::run()
     const GgMatrix modelview(view * model);
 
     // 粒子群オブジェクトを描画する
-    blob->draw(projection, modelview);
+    blob->drawMetaball(projection, modelview, window, light);
 
     // 粒子群オブジェクトを更新する
     blob->update();

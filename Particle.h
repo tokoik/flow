@@ -4,6 +4,7 @@ using namespace gg;
 
 // 標準ライブラリ
 #include <array>
+#include <vector>
 
 //
 // ベクトルデータ
@@ -35,3 +36,8 @@ struct Particle
   ~Particle()
   {}
 };
+
+//
+// 粒子群データ
+//
+using Particles = std::vector<Particle>;

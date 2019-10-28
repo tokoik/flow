@@ -133,6 +133,13 @@
   <ItemGroup>
     <None Include="point.frag" />
     <None Include="point.vert" />
+    <None Include="potential.frag" />
+    <None Include="potential.vert" />
+    <None Include="rectangle.frag" />
+    <None Include="rectangle.vert" />
+    <None Include="rectangleZ.vert" />
+    <None Include="simple.frag" />
+    <None Include="simple.vert" />
     <None Include="update.comp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
